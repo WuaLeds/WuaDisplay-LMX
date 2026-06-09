@@ -1,46 +1,36 @@
 #ifndef WUADISPLAY_LMX_H
 #define WUADISPLAY_LMX_H
 
-#include <Arduino.h>
+// ============================================================================
+//  WuaDisplay-LMX -- public entry point
+// ----------------------------------------------------------------------------
+//  Two-layer display library:
+//
+//    Layer 2 (high level)  WuaDisplayLMX<Panel>  -- text, scroll, effects
+//    Layer 1 (pixel)       LMX1 / LMX2           -- Adafruit_GFX backends
+//
+//  Pick the backend at COMPILE time with a build flag:
+//
+//    -D WUA_BOARD_LMX1   (default)   N chained 7x18 SK6812 modules (FastLED)
+//    -D WUA_BOARD_LMX2               single 6x12 AW20216S RGB matrix (SPI)
+//
+//  `WuaDisplay` is the resulting concrete type. Constructor arguments are
+//  forwarded to the active panel:
+//
+//    WuaDisplay display(7);    // LMX1: 7 modules chained -> 49x18 canvas
+//    WuaDisplay display(10);   // LMX2: AW20216S on CS pin 10
+//
+//  Only the active backend's header (and its dependency) is pulled in.
+// ============================================================================
 
-// Incluir todas (no pasa nada)
-#include <WuaDisplay.h>
-#include <AW20216S.h>
+#include "WuaDisplayLMX.h"
 
-class WuaDisplay_LMX
-{
-public:
-
-    enum ModuleType
-    {
-        MOD_WuaDisplay,
-        MOD_LMX1,
-        MOD_LMX2
-    };
-
-    // Constructor
-    WuaDisplay_LMX(ModuleType type,
-                   int pinCS_LMX2 = -1,
-                   int pin2 = -1,
-                   int pin3 = -1,
-                   int pin4 = -1);
-
-    void begin();
-    void clear();
-    void printAligned(const String &text);
-    // void update();
-
-private:
-
-    ModuleType _type;
-
-    // Punteros a cada tipo
-    WuaDisplay* _modWuaDisplay = nullptr;
-    WuaDisplay* _lmx1 = nullptr;
-    AW20216S*   _lmx2 = nullptr;
-
-    // Pines
-    int _pinCS_LMX2, _pin2, _pin3, _pin4;
-};
-
+#if defined(WUA_BOARD_LMX2)
+#include "LMX2.h"
+using WuaDisplay = WuaDisplayLMX<LMX2>;
+#else
+#include "LMX1.h"
+using WuaDisplay = WuaDisplayLMX<LMX1>;
 #endif
+
+#endif // WUADISPLAY_LMX_H
