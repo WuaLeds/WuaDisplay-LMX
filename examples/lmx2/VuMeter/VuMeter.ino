@@ -45,7 +45,11 @@
 #define PEAK_HOLD_MS  400  // How long the peak marker holds before falling.
 #define PEAK_FALL     3    // % the peak marker falls per frame after holding.
 
-WuaDisplay display(CS_PIN);
+// The concrete backend behind `WuaDisplay` is selected at compile time by the
+// active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
+#if defined(WUA_BOARD_LMX2)
+  WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#endif
 
 // Smoothed display level and peak marker, both in percent (0..100).
 float dispPct = 0;

@@ -31,7 +31,11 @@
 // How long each icon stays on screen before switching to the next one.
 #define DISPLAY_MS 1500
 
-WuaDisplay display(CS_PIN);
+// The concrete backend behind `WuaDisplay` is selected at compile time by the
+// active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
+#if defined(WUA_BOARD_LMX2)
+  WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#endif
 
 //*********************************************************** */
 //***********        Icon Bitmaps (6 wide x 12 tall)          */

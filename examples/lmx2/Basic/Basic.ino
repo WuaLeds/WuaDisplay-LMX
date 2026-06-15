@@ -25,7 +25,12 @@
 
 // Master brightness (global current) and white balance are configured inside
 // LMX2::begin(); they are not part of the high-level API.
-WuaDisplay display(CS_PIN);
+
+// The concrete backend behind `WuaDisplay` is selected at compile time by the
+// active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
+#if defined(WUA_BOARD_LMX2)
+  WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#endif
 
 void setup()
 {

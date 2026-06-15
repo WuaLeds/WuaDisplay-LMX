@@ -51,7 +51,11 @@
 #define BALL_G 255
 #define BALL_B 255
 
-WuaDisplay display(CS_PIN);
+// The concrete backend behind `WuaDisplay` is selected at compile time by the
+// active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
+#if defined(WUA_BOARD_LMX2)
+  WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#endif
 
 // ── Game state ────────────────────────────────────────────
 float ballX, ballY; // Ball position (sub-pixel).

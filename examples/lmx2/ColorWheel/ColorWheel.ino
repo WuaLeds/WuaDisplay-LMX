@@ -30,7 +30,11 @@
 #define HUE_STEP  1   // Hue increment per frame (1..255). Higher = faster.
 #define FRAME_MS  30  // Milliseconds between frames.
 
-WuaDisplay display(CS_PIN);
+// The concrete backend behind `WuaDisplay` is selected at compile time by the
+// active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
+#if defined(WUA_BOARD_LMX2)
+  WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#endif
 
 // Convert a hue (0..255 around the wheel) into an RGB triplet at full
 // saturation and full value.

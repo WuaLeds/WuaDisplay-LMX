@@ -26,7 +26,11 @@
 #define WIDTH_LED_MATRIX  6
 #define HEIGHT_LED_MATRIX 12
 
-WuaDisplay display(CS_PIN);
+// The concrete backend behind `WuaDisplay` is selected at compile time by the
+// active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
+#if defined(WUA_BOARD_LMX2)
+  WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#endif
 
 // -------------------- Sine LUT (quarter-wave, 64 samples) --------------------
 // Values are sin(theta) scaled to 0..255 for theta in [0..pi/2). We reconstruct

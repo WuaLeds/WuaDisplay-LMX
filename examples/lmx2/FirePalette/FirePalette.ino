@@ -42,7 +42,11 @@
 // Use any ADC-capable pin on your board (ESP32-C3: GPIO0..4). Adjust as needed.
 #define SEED_NOISE_PIN 3
 
-WuaDisplay display(CS_PIN);
+// The concrete backend behind `WuaDisplay` is selected at compile time by the
+// active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
+#if defined(WUA_BOARD_LMX2)
+  WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#endif
 
 // Per-pixel heat field. y = 0 is the top row, y = HEIGHT-1 is the hot base.
 uint8_t heat[HEIGHT_LED_MATIX][WIDTH_LED_MATRIX];
