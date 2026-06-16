@@ -30,6 +30,8 @@
 // active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
 #if defined(WUA_BOARD_LMX2)
   WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#else
+  #error "These examples target the LMX2 backend; build with -D WUA_BOARD_LMX2"
 #endif
 
 void setup()

@@ -26,7 +26,7 @@
 
 // Row and Column definitions for the 6x12 RGB matrix.
 #define WIDTH_LED_MATRIX 6
-#define HEIGHT_LED_MATIX 12
+#define HEIGHT_LED_MATRIX 12
 
 // How long each icon stays on screen before switching to the next one.
 #define DISPLAY_MS 1500
@@ -35,6 +35,8 @@
 // active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
 #if defined(WUA_BOARD_LMX2)
   WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#else
+  #error "These examples target the LMX2 backend; build with -D WUA_BOARD_LMX2"
 #endif
 
 //*********************************************************** */
@@ -45,7 +47,7 @@
 //   Y yellow   C cyan   M magenta  W white   O orange
 // Add your own icons here; just keep them 6 wide and 12 tall.
 
-const char ICONS[][HEIGHT_LED_MATIX][WIDTH_LED_MATRIX + 1] = {
+const char ICONS[][HEIGHT_LED_MATRIX][WIDTH_LED_MATRIX + 1] = {
   { // 0: Heart
     "......",
     ".R..R.",
@@ -166,7 +168,7 @@ static void drawIcon(uint8_t index)
 {
   display.clear();
 
-  for (uint8_t y = 0; y < HEIGHT_LED_MATIX; y++)
+  for (uint8_t y = 0; y < HEIGHT_LED_MATRIX; y++)
   {
     for (uint8_t x = 0; x < WIDTH_LED_MATRIX; x++)
     {

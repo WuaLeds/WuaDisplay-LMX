@@ -31,7 +31,7 @@
 
 // Row and Column definitions for the 6x12 RGB matrix.
 #define WIDTH_LED_MATRIX 6
-#define HEIGHT_LED_MATIX 12
+#define HEIGHT_LED_MATRIX 12
 
 // ── Input source ──────────────────────────────────────────
 #define USE_ANALOG_INPUT 0    // 0 = Serial control, 1 = read AUDIO_PIN
@@ -49,6 +49,8 @@
 // active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
 #if defined(WUA_BOARD_LMX2)
   WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#else
+  #error "These examples target the LMX2 backend; build with -D WUA_BOARD_LMX2"
 #endif
 
 // Smoothed display level and peak marker, both in percent (0..100).
@@ -185,16 +187,16 @@ void loop()
   }
 
   // 3. Convert percentages to row counts (0..HEIGHT).
-  const int barRows  = (int)(dispPct * HEIGHT_LED_MATIX / 100.0f + 0.5f);
-  const int peakRow  = (int)(peakPct * HEIGHT_LED_MATIX / 100.0f + 0.5f);
+  const int barRows  = (int)(dispPct * HEIGHT_LED_MATRIX / 100.0f + 0.5f);
+  const int peakRow  = (int)(peakPct * HEIGHT_LED_MATRIX / 100.0f + 0.5f);
 
   // 4. Render: fill columns from the bottom up, plus the peak marker.
   display.clear();
 
   for (int i = 0; i < barRows; i++)
   {
-    const int   y    = HEIGHT_LED_MATIX - 1 - i;        // bottom-up
-    const float frac = (float)(i + 1) / HEIGHT_LED_MATIX;
+    const int   y    = HEIGHT_LED_MATRIX - 1 - i;        // bottom-up
+    const float frac = (float)(i + 1) / HEIGHT_LED_MATRIX;
     uint8_t r, g, b;
     barColor(frac, r, g, b);
     for (uint8_t x = 0; x < WIDTH_LED_MATRIX; x++)
@@ -204,7 +206,7 @@ void loop()
   // White peak marker (only when it sits above the solid bar).
   if (peakRow > 0 && peakRow >= barRows)
   {
-    const int y = HEIGHT_LED_MATIX - peakRow;
+    const int y = HEIGHT_LED_MATRIX - peakRow;
     for (uint8_t x = 0; x < WIDTH_LED_MATRIX; x++)
       display.panel().drawPixel(x, y, WuaDisplay::color565(255, 255, 255));
   }

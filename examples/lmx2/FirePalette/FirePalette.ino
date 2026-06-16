@@ -30,7 +30,7 @@
 
 // Row and Column definitions for the 6x12 RGB matrix.
 #define WIDTH_LED_MATRIX 6
-#define HEIGHT_LED_MATIX 12
+#define HEIGHT_LED_MATRIX 12
 
 // ── Fire tuning ───────────────────────────────────────────
 #define FRAME_MS    50  // Milliseconds between frames.
@@ -46,10 +46,12 @@
 // active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
 #if defined(WUA_BOARD_LMX2)
   WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#else
+  #error "These examples target the LMX2 backend; build with -D WUA_BOARD_LMX2"
 #endif
 
 // Per-pixel heat field. y = 0 is the top row, y = HEIGHT-1 is the hot base.
-uint8_t heat[HEIGHT_LED_MATIX][WIDTH_LED_MATRIX];
+uint8_t heat[HEIGHT_LED_MATRIX][WIDTH_LED_MATRIX];
 
 //*********************************************************** */
 //***********        Fire palette                             */
@@ -91,7 +93,7 @@ static void heatToColor(uint8_t h, uint8_t &r, uint8_t &g, uint8_t &b)
 static void stepFire()
 {
   // 1. Reheat the bottom row with random embers (the fuel source).
-  const uint8_t base = HEIGHT_LED_MATIX - 1;
+  const uint8_t base = HEIGHT_LED_MATRIX - 1;
   for (uint8_t x = 0; x < WIDTH_LED_MATRIX; x++)
     heat[base][x] = (uint8_t)random(EMBER_MIN, EMBER_MAX + 1);
 
@@ -108,7 +110,7 @@ static void stepFire()
       const uint8_t below  = heat[y + 1][x];
       const uint8_t belowL = heat[y + 1][xl];
       const uint8_t belowR = heat[y + 1][xr];
-      const uint8_t below2 = (y + 2 < HEIGHT_LED_MATIX) ? heat[y + 2][x] : below;
+      const uint8_t below2 = (y + 2 < HEIGHT_LED_MATRIX) ? heat[y + 2][x] : below;
 
       const uint16_t avg = ((uint16_t)below + belowL + belowR + below2) / 4;
       const int16_t cooled = (int16_t)avg - (int16_t)random(0, COOLING);
@@ -118,7 +120,7 @@ static void stepFire()
   }
 
   // 3. Render the heat field through the fire palette.
-  for (uint8_t y = 0; y < HEIGHT_LED_MATIX; y++)
+  for (uint8_t y = 0; y < HEIGHT_LED_MATRIX; y++)
   {
     for (uint8_t x = 0; x < WIDTH_LED_MATRIX; x++)
     {

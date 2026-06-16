@@ -26,7 +26,7 @@
 
 // Row and Column definitions for the 6x12 RGB matrix.
 #define WIDTH_LED_MATRIX 6
-#define HEIGHT_LED_MATIX 12
+#define HEIGHT_LED_MATRIX 12
 
 // ── Game tuning ───────────────────────────────────────────
 #define FRAME_MS      60    // Milliseconds between frames.
@@ -55,6 +55,8 @@
 // active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
 #if defined(WUA_BOARD_LMX2)
   WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#else
+  #error "These examples target the LMX2 backend; build with -D WUA_BOARD_LMX2"
 #endif
 
 // ── Game state ────────────────────────────────────────────
@@ -84,7 +86,7 @@ static inline int clampi(int v, int lo, int hi)
 static void serveBall(int dir)
 {
   ballX = (WIDTH_LED_MATRIX - 1) / 2.0f;
-  ballY = (HEIGHT_LED_MATIX - 1) / 2.0f;
+  ballY = (HEIGHT_LED_MATRIX - 1) / 2.0f;
   velX  = (random(0, 2) ? 1 : -1) * (0.2f + random(0, 40) / 100.0f); // -0.6..-0.2 or 0.2..0.6
   velY  = dir * BALL_SPEED;
 }
@@ -175,11 +177,11 @@ void loop()
   }
 
   // 5. Handle the bottom edge (bottom paddle, last row).
-  if (ballY >= HEIGHT_LED_MATIX - 1 && velY > 0)
+  if (ballY >= HEIGHT_LED_MATRIX - 1 && velY > 0)
   {
     if (paddleCovers(botPaddleX, bx))
     {
-      ballY = HEIGHT_LED_MATIX - 1;
+      ballY = HEIGHT_LED_MATRIX - 1;
       bounceOffPaddle(botPaddleX, -1); // send it back up
     }
     else
@@ -198,11 +200,11 @@ void loop()
   {
     display.panel().drawPixel(topPaddleX + i, 0,
                               WuaDisplay::color565(TOP_R, TOP_G, TOP_B));
-    display.panel().drawPixel(botPaddleX + i, HEIGHT_LED_MATIX - 1,
+    display.panel().drawPixel(botPaddleX + i, HEIGHT_LED_MATRIX - 1,
                               WuaDisplay::color565(BOT_R, BOT_G, BOT_B));
   }
 
-  const int by = clampi(iround(ballY), 0, HEIGHT_LED_MATIX - 1);
+  const int by = clampi(iround(ballY), 0, HEIGHT_LED_MATRIX - 1);
   display.panel().drawPixel(bx, by, WuaDisplay::color565(BALL_R, BALL_G, BALL_B));
 
   display.flush();

@@ -27,7 +27,7 @@
 
 // Row and Column definitions for the 6x12 RGB matrix.
 #define WIDTH_LED_MATRIX 6
-#define HEIGHT_LED_MATIX 12
+#define HEIGHT_LED_MATRIX 12
 
 // ── Simulation ────────────────────────────────────────────
 #define GEN_MS         180 // Milliseconds between generations.
@@ -47,11 +47,13 @@
 // active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
 #if defined(WUA_BOARD_LMX2)
   WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#else
+  #error "These examples target the LMX2 backend; build with -D WUA_BOARD_LMX2"
 #endif
 
 // Two grids: the current generation and the one being computed (double buffer).
-uint8_t gridCur[HEIGHT_LED_MATIX][WIDTH_LED_MATRIX];
-uint8_t gridNext[HEIGHT_LED_MATIX][WIDTH_LED_MATRIX];
+uint8_t gridCur[HEIGHT_LED_MATRIX][WIDTH_LED_MATRIX];
+uint8_t gridNext[HEIGHT_LED_MATRIX][WIDTH_LED_MATRIX];
 
 //*********************************************************** */
 //***********        Simulation helpers                       */
@@ -60,7 +62,7 @@ uint8_t gridNext[HEIGHT_LED_MATIX][WIDTH_LED_MATRIX];
 // Fill the current grid with a fresh random pattern.
 static void seedGrid()
 {
-  for (uint8_t y = 0; y < HEIGHT_LED_MATIX; y++)
+  for (uint8_t y = 0; y < HEIGHT_LED_MATRIX; y++)
     for (uint8_t x = 0; x < WIDTH_LED_MATRIX; x++)
       gridCur[y][x] = (random(100) < SEED_PERCENT) ? 1 : 0;
 }
@@ -77,7 +79,7 @@ static uint8_t countNeighbors(uint8_t x, uint8_t y)
         continue; // skip the cell itself
 
       const uint8_t nx = (uint8_t)((x + dx + WIDTH_LED_MATRIX) % WIDTH_LED_MATRIX);
-      const uint8_t ny = (uint8_t)((y + dy + HEIGHT_LED_MATIX) % HEIGHT_LED_MATIX);
+      const uint8_t ny = (uint8_t)((y + dy + HEIGHT_LED_MATRIX) % HEIGHT_LED_MATRIX);
       count += gridCur[ny][nx];
     }
   }
@@ -90,7 +92,7 @@ static bool stepGeneration()
 {
   bool changed = false;
 
-  for (uint8_t y = 0; y < HEIGHT_LED_MATIX; y++)
+  for (uint8_t y = 0; y < HEIGHT_LED_MATRIX; y++)
   {
     for (uint8_t x = 0; x < WIDTH_LED_MATRIX; x++)
     {
@@ -115,7 +117,7 @@ static bool stepGeneration()
 static uint16_t population()
 {
   uint16_t total = 0;
-  for (uint8_t y = 0; y < HEIGHT_LED_MATIX; y++)
+  for (uint8_t y = 0; y < HEIGHT_LED_MATRIX; y++)
     for (uint8_t x = 0; x < WIDTH_LED_MATRIX; x++)
       total += gridCur[y][x];
   return total;
@@ -125,7 +127,7 @@ static uint16_t population()
 static void renderGrid()
 {
   display.clear();
-  for (uint8_t y = 0; y < HEIGHT_LED_MATIX; y++)
+  for (uint8_t y = 0; y < HEIGHT_LED_MATRIX; y++)
     for (uint8_t x = 0; x < WIDTH_LED_MATRIX; x++)
       if (gridCur[y][x])
         display.panel().drawPixel(x, y, WuaDisplay::color565(CELL_R, CELL_G, CELL_B));

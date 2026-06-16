@@ -45,7 +45,7 @@ display.begin();
 | Basic        | Moving pixel + full-screen flash (`drawPixel`, `fillScreen`).  |
 | ColorWheel   | Animated HSV color sweep across the matrix.                    |
 | TextScroll   | Non-blocking scrolling text via `startScroll`.                 |
-| IconViewer   | Drawing monochrome bitmaps with `drawBitmap`.                  |
+| IconViewer   | Multi-color icons drawn pixel-by-pixel from ASCII-art maps.    |
 | SpatialSine  | Plasma-like pattern from a spatial `sin()` field.              |
 | Pong         | Minimal Pong animation using GFX primitives.                   |
 | GameOfLife   | Conway's Game of Life on a software cell buffer.               |
