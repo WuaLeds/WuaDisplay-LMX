@@ -1,3 +1,8 @@
+// LMX2 backend: active only when its board flag is set (mirrors WuaDisplay_LMX.h).
+// Guarding the whole translation unit means a consumer building the LMX1 backend
+// never compiles this file, so it does not drag in Wualeds_AW20216S.
+#if defined(WUA_BOARD_LMX2)
+
 #include "LMX2.h"
 
 LMX2::LMX2(uint8_t csPin, SPIClass &spiPort)
@@ -43,3 +48,5 @@ void LMX2::blur(uint8_t /*amount*/)
 {
     // Not supported: the AW20216S framebuffer cannot be read back for blending.
 }
+
+#endif // WUA_BOARD_LMX2

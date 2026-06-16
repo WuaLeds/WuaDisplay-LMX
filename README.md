@@ -72,21 +72,23 @@ void loop() {
 
 ## Build
 
-This repository doubles as the library and a build harness, with one PlatformIO
-environment per backend:
-
-```sh
-pio run -e lmx1               # LMX1 (FastLED)
-pio run -e lmx2               # LMX2 (AW20216S)
-pio run -e lmx1 -t upload     # build + flash
-```
-
-`build_src_filter` excludes the inactive panel so only the selected backend's
-dependency is compiled. When consuming this as a library, define the board flag
-in your project's `platformio.ini`:
+This is a library, not a standalone app: `src/` ships **no** entry point
+(`setup()`/`loop()`), so `pio run` cannot link it on its own. Consume it from a
+project that adds it as a dependency and selects a backend with a build flag:
 
 ```ini
-build_flags = -D WUA_BOARD_LMX1
+build_flags = -D WUA_BOARD_LMX2   ; or -D WUA_BOARD_LMX1
+```
+
+Each backend's `.cpp` is guarded by that flag, so your project compiles — and
+pulls the dependency of — only the active backend (`LMX2` → AW20216S,
+`LMX1` → FastLED), never both.
+
+To compile-check a bundled example locally (what CI does on every push/PR),
+build it as the sketch through this repo's environments:
+
+```sh
+cp examples/lmx2/Basic/Basic.ino src/main.cpp && pio run -e lmx2 && rm src/main.cpp
 ```
 
 ### Dependencies
