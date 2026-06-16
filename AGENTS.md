@@ -30,16 +30,21 @@ Source layout:
 - `src/WuaDisplayLMX.h` — Layer 2 engine (template) and the Panel contract documentation.
 - `src/LMX1.{h,cpp}`, `src/LMX2.{h,cpp}` — Layer 1 backends.
 - `src/WuaDisplay_LMX.h` — public umbrella header; compile-time backend selection → `using WuaDisplay = ...`.
-- `src/main.cpp` — example sketch / build harness.
+- `examples/lmx2/` — reference sketches (the library ships **no** app entry point).
+
+Each backend's translation unit is wrapped in its board flag: `LMX1.cpp` compiles unless `WUA_BOARD_LMX2` is set (the LMX1/default case), `LMX2.cpp` only when it is. So a consumer compiles — and pulls the dependency of — only the active backend, regardless of `build_src_filter`. Keep these guards consistent with the `#if/#else` in `WuaDisplay_LMX.h`.
 
 ## Build
 
-This repo doubles as a PlatformIO library and a build harness. One environment per backend:
-- `pio run -e lmx1` — LMX1 (FastLED).
-- `pio run -e lmx2` — LMX2 (AW20216S).
-- `pio run -e <env> -t upload` to flash.
+This is a library, not an app: `src/` ships no entry point, so `pio run` cannot link it on its own. Consume it by adding it as a dependency and selecting a backend with a build flag (`-D WUA_BOARD_LMX1` or `-D WUA_BOARD_LMX2`).
 
-`build_src_filter` excludes the inactive panel so only the active backend's dependency is compiled. When consumed as a library, define the board flag in the consuming project's `platformio.ini`.
+To compile-check a bundled example (what CI does), build it as the sketch through the repo's environments, e.g.:
+
+```sh
+cp examples/lmx2/Basic/Basic.ino src/main.cpp && pio run -e lmx2 && rm src/main.cpp
+```
+
+CI (`.github/workflows/build.yml`) builds every `examples/lmx2` sketch and a minimal LMX1 sketch on each push/PR.
 
 ## Code Style
 

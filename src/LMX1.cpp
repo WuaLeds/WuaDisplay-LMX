@@ -1,3 +1,9 @@
+// LMX1 is the default backend: active whenever the LMX2 board flag is NOT set
+// (mirrors the #else branch in WuaDisplay_LMX.h). Guarding the whole translation
+// unit means a consumer building the LMX2 backend never compiles this file, so
+// it does not drag in FastLED.
+#if !defined(WUA_BOARD_LMX2)
+
 #include "LMX1.h"
 
 // Map logical (x, y) -> physical index in the 1D LED array.
@@ -70,3 +76,5 @@ void LMX1::blur(uint8_t amount)
 {
     blur2d(_leds, static_cast<uint8_t>(_panelWidth), LMX1_MODULE_HEIGHT, amount, _xyMap);
 }
+
+#endif // !WUA_BOARD_LMX2
