@@ -1,7 +1,9 @@
 // Example: Pong — a self-playing Pong with a bouncing ball.
 //
 // Ported from the Wualeds_AW20216S "Pong" example to the high-level WuaDisplay
-// API (LMX2 backend). Build a consuming project with -D WUA_BOARD_LMX2.
+// API. The backend is selected at build time: -D WUA_BOARD_LMX1 for the 7x9
+// SK6812 module, -D WUA_BOARD_LMX2 for the 6x12 AW20216S matrix, or neither for
+// the default (LMX1) build.
 //
 // A ball bounces between the left and right walls while two AI paddles (top and
 // bottom) slide sideways to catch it. Each rally speeds the ball up a little;
@@ -15,18 +17,7 @@
 //   - display.clear() + display.panel().drawPixel() + display.flush() to render.
 
 #include <Arduino.h>
-#include <SPI.h>
 #include "WuaDisplay_LMX.h"
-
-// ---- Wiring (placeholder values for ESP32-C3 — adjust to your board) ----
-#define PIN_SCK  6
-#define PIN_MISO 5
-#define PIN_MOSI 7
-#define CS_PIN   10
-
-// Row and Column definitions for the 6x12 RGB matrix.
-#define WIDTH_LED_MATRIX 6
-#define HEIGHT_LED_MATRIX 12
 
 // ── Game tuning ───────────────────────────────────────────
 #define FRAME_MS      60    // Milliseconds between frames.
@@ -54,9 +45,22 @@
 // The concrete backend behind `WuaDisplay` is selected at compile time by the
 // active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
 #if defined(WUA_BOARD_LMX2)
+  #include <SPI.h>
+  // ---- Wiring (placeholder values for ESP32-C3 — adjust to your board) ----
+  #define PIN_SCK  6
+  #define PIN_MISO 5
+  #define PIN_MOSI 7
+  #define CS_PIN   10
+  // One LMX2 module is a 6x12 SK6812 RGB matrix.
+  #define WIDTH_LED_MATRIX 6
+  #define HEIGHT_LED_MATRIX 12
   WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
 #else
-  #error "These examples target the LMX2 backend; build with -D WUA_BOARD_LMX2"
+  // One LMX1 module is a 7x9 SK6812 RGB matrix.
+  #define WIDTH_LED_MATRIX 7
+  #define HEIGHT_LED_MATRIX 9
+  #define LMX1_LED_PIN 5
+  WuaDisplay display(1);      // LMX1: N modules chained
 #endif
 
 // ── Game state ────────────────────────────────────────────
@@ -122,9 +126,13 @@ static void bounceOffPaddle(int paddleX, int newDir)
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("Starting WuaDisplay LMX2 — Pong...");
+  Serial.println("Starting WuaDisplay — Pong...");
   delay(500);
+
+#if defined(WUA_BOARD_LMX2)
   SPI.begin(PIN_SCK, PIN_MISO, PIN_MOSI, CS_PIN);
+#endif
+
   delay(50);
 
   display.begin();

@@ -19,7 +19,7 @@ dispatch and no heap on the hot path.
                           ▲ composes a Panel by value
 ┌─ Layer 1 · PIXEL PANEL (Adafruit_GFX subclass) ───────────────────┐
 │  contract: drawPixel() · begin() · clear() · flush() · blur()      │
-│  ► LMX1 : FastLED, N×(7×18) SK6812 modules chained right-to-left   │
+│  ► LMX1 : FastLED, N×(7×9) SK6812 modules chained right-to-left    │
 │  ► LMX2 : AW20216S 6×12 RGB matrix (SPI), 565→RGB adapter          │
 └────────────────────────────────────────────────────────────────────┘
 ```
@@ -37,8 +37,8 @@ is written once on top.
 
 ## Backends
 
-- **LMX1** — N modules of 7×18 px chained horizontally, driven as SK6812
-  addressable LEDs through FastLED. Logical canvas: `(7·N) × 18`.
+- **LMX1** — N modules of 7×9 px chained horizontally, driven as SK6812
+  addressable LEDs through FastLED. Logical canvas: `(7·N) × 9`.
 - **LMX2** — single AW20216S 6×12 RGB matrix over SPI. (At 6 px wide, text is
   barely legible; this panel mainly targets pixel art and effects, but honours
   the same contract.)
@@ -88,7 +88,7 @@ To compile-check a bundled example locally (what CI does on every push/PR),
 build it as the sketch through this repo's environments:
 
 ```sh
-cp examples/lmx2/Basic/Basic.ino src/main.cpp && pio run -e lmx2 && rm src/main.cpp
+cp examples/Basic/Basic.ino src/main.cpp && pio run -e lmx2 && rm src/main.cpp
 ```
 
 ### Dependencies

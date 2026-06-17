@@ -26,10 +26,10 @@ jobs:
           key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
       - name: Install PlatformIO
         run: pip install --upgrade platformio
-      - name: Build every examples/lmx2 sketch
+      - name: Build every example sketch
         run: |
           set -e
-          for f in examples/lmx2/*/*.ino; do
+          for f in examples/*/*.ino; do
             echo "::group::$f"
             cp "$f" src/main.cpp
             pio run -e lmx2
