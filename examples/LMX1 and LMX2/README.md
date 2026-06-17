@@ -1,23 +1,45 @@
-# LMX2 examples
+# LMX1 and LMX2 examples
 
-Example sketches for the **LMX2** backend (AW20216S 6×12 RGB matrix, SPI),
-written against the high-level `WuaDisplay` API of this library.
+Example sketches written against the high-level `WuaDisplay` API of this
+library. Each sketch runs on **either backend**, selected at build time:
+
+- `-D WUA_BOARD_LMX1` — one or more 7×9 SK6812 RGB modules driven over a single
+  data pin (FastLED). This is also the **default** build when no flag is set.
+- `-D WUA_BOARD_LMX2` — a single 6×12 AW20216S RGB matrix driven over SPI.
 
 They were ported from the upstream
 [`Wualeds_AW20216S`](https://github.com/WuaLeds/Wualeds_AW20216S) examples,
 which talk to the chip directly. Here they go through the two-layer API instead:
-high-level helpers (`color565`, `printAligned`, `startScroll`, `clear`,
+high-level helpers (`color565`, `setTextColorRGB`, `startScroll`, `clear`,
 `flush`) plus the raw `Adafruit_GFX` escape hatch exposed by `display.panel()`
 for per-pixel drawing.
 
 > **Reference only.** PlatformIO does not compile a library's `examples/`
 > folder automatically. To run one, copy its sketch into a project that
-> consumes `WuaDisplay_LMX` and builds with `-D WUA_BOARD_LMX2`.
+> consumes `WuaDisplay_LMX` and builds with the desired board flag.
 
-## Wiring
+## Board selection
 
-Every sketch starts from the same configuration block. The pins below are
-**placeholders** for an ESP32-C3 — adjust them to your actual board/wiring:
+The configuration block at the top of every sketch picks the backend and its
+wiring at compile time:
+
+```cpp
+#if defined(WUA_BOARD_LMX2)
+  // single 6×12 AW20216S over SPI
+  WuaDisplay display(CS_PIN);
+#elif defined(WUA_BOARD_LMX1)
+  // one 7×9 SK6812 module over LMX1_LED_PIN
+  WuaDisplay display(1);
+#else
+  // default: chained LMX1 modules
+  WuaDisplay display(7);
+#endif
+```
+
+### LMX2 wiring (SPI)
+
+The pins below are **placeholders** for an ESP32-C3 — adjust them to your
+actual board/wiring:
 
 ```cpp
 // ---- Wiring (placeholder values for ESP32-C3 — adjust to your board) ----
@@ -38,6 +60,18 @@ WuaDisplay display(CS_PIN);
 display.begin();
 ```
 
+### LMX1 wiring (single data pin)
+
+LMX1 modules are addressable SK6812 LEDs driven through FastLED on one data
+pin (`LMX1_LED_PIN`, default 5). No SPI setup is needed; just construct the
+display with the number of chained modules and call `begin()`:
+
+```cpp
+WuaDisplay display(1); // one 7×9 module; pass N for N chained modules
+// ...
+display.begin();
+```
+
 ## Examples
 
 | Example      | What it shows                                                  |
@@ -50,7 +84,7 @@ display.begin();
 | Pong         | Minimal Pong animation using GFX primitives.                   |
 | GameOfLife   | Conway's Game of Life on a software cell buffer.               |
 | FirePalette  | Classic fire effect rendered from a software heat buffer.      |
-| VuMeter      | Bar-graph VU meter (simulated audio input).                    |
+| VuMeter      | Bar-graph VU meter (Serial- or analog-driven input).          |
 
 ## Not ported
 
@@ -70,7 +104,9 @@ does not expose:
 
 ## Caveats
 
-- The LMX2 matrix is only **6 px wide**, so static text is barely legible;
-  `TextScroll` uses horizontal scrolling, which is what makes sense here.
+- Both panels are **narrow** (LMX2 is 6 px wide, one LMX1 module 7 px), so
+  static text is barely legible; `TextScroll` uses horizontal scrolling, which
+  is what makes sense here. Chain several LMX1 modules for a wider marquee.
 - `applyBlur()` is a **no-op** on LMX2 (the AW20216S framebuffer cannot be read
-  back), so effects such as `FirePalette` keep their own software buffer.
+  back), so effects such as `FirePalette` keep their own software buffer; this
+  also keeps the result identical across both backends.

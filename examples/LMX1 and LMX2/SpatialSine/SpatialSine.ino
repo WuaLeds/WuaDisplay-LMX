@@ -1,8 +1,9 @@
 // Example: SpatialSine — animated RGB sine wave across the panel.
 //
 // Ported from the Wualeds_AW20216S "SpatialSine" example to the high-level
-// WuaDisplay API (LMX2 backend). Build a consuming project with
-// -D WUA_BOARD_LMX2.
+// WuaDisplay API. The backend is selected at build time: -D WUA_BOARD_LMX1
+// for the 7x9 SK6812 module, -D WUA_BOARD_LMX2 for the 6x12 AW20216S matrix,
+// or neither for the default (LMX1) build.
 //
 // Each pixel's brightness comes from a spatial sine field, phase(x,y) =
 // t + x*dx + y*dy, with a different phase offset per color channel. The result
@@ -14,24 +15,28 @@
 //   - display.panel().drawPixel() + display.flush() to render a full frame.
 
 #include <Arduino.h>
-#include <SPI.h>
 #include "WuaDisplay_LMX.h"
-
-// ---- Wiring (placeholder values for ESP32-C3 — adjust to your board) ----
-#define PIN_SCK  6
-#define PIN_MISO 5
-#define PIN_MOSI 7
-#define CS_PIN   10
-
-#define WIDTH_LED_MATRIX  6
-#define HEIGHT_LED_MATRIX 12
 
 // The concrete backend behind `WuaDisplay` is selected at compile time by the
 // active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
 #if defined(WUA_BOARD_LMX2)
+  #include <SPI.h>
+  // ---- Wiring (placeholder values for ESP32-C3 — adjust to your board) ----
+  #define PIN_SCK  6
+  #define PIN_MISO 5
+  #define PIN_MOSI 7
+  #define CS_PIN   10
   WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#elif defined(WUA_BOARD_LMX1)
+  // One LMX1 module is a 7x9 SK6812 RGB matrix.
+  #define WIDTH_LED_MATRIX 7
+  #define HEIGHT_LED_MATRIX 9
+  #define LMX1_LED_PIN 5
+  WuaDisplay display(1);      // LMX1: N modules chained
 #else
-  #error "These examples target the LMX2 backend; build with -D WUA_BOARD_LMX2"
+  #define WIDTH_LED_MATRIX 7
+  #define HEIGHT_LED_MATRIX 9
+  WuaDisplay display(7);      // WuaDisplay (7 modules LMX1 chained)
 #endif
 
 // -------------------- Sine LUT (quarter-wave, 64 samples) --------------------
@@ -81,7 +86,9 @@ static inline uint8_t sin8_brightness(uint8_t phase)
   return (uint8_t)v;
 }
 
-static inline uint8_t add8(uint8_t a, uint8_t b) { return (uint8_t)(a + b); }
+#if defined(WUA_BOARD_LMX2)
+  static inline uint8_t add8(uint8_t a, uint8_t b) { return (uint8_t)(a + b); }
+#endif
 
 // -------------------- Spatial animation params --------------------
 static const uint8_t kDx = 18;    // phase step per column
@@ -96,9 +103,13 @@ static const uint8_t kOffB = 170;  // ~240 degrees
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("Starting WuaDisplay LMX2 — SpatialSine...");
+  Serial.println("Starting WuaDisplay — SpatialSine...");
   delay(500);
+
+#if defined(WUA_BOARD_LMX2)
   SPI.begin(PIN_SCK, PIN_MISO, PIN_MOSI, CS_PIN);
+#endif
+
   delay(50);
 
   display.begin();

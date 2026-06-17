@@ -1,11 +1,12 @@
 // Example: IconViewer — show several color icons, one after another.
 //
 // Ported from the Wualeds_AW20216S "IconViewer" example to the high-level
-// WuaDisplay API (LMX2 backend). Build a consuming project with
-// -D WUA_BOARD_LMX2.
+// WuaDisplay API. The backend is selected at build time: -D WUA_BOARD_LMX1
+// for the 7x9 SK6812 module, -D WUA_BOARD_LMX2 for the 6x12 AW20216S matrix,
+// or neither for the default (LMX1) build.
 //
 // A small gallery of multi-color icons (heart, up arrow, check, cross,
-// battery, exclamation) is drawn on the 6x12 panel. Every few seconds the
+// battery, exclamation) is drawn on the panel. Every few seconds the
 // current icon is replaced by the next one, looping forever.
 //
 // What it shows:
@@ -15,18 +16,7 @@
 //   - mapping a character to a color through a small palette function.
 
 #include <Arduino.h>
-#include <SPI.h>
 #include "WuaDisplay_LMX.h"
-
-// ---- Wiring (placeholder values for ESP32-C3 — adjust to your board) ----
-#define PIN_SCK  6
-#define PIN_MISO 5
-#define PIN_MOSI 7
-#define CS_PIN   10
-
-// Row and Column definitions for the 6x12 RGB matrix.
-#define WIDTH_LED_MATRIX 6
-#define HEIGHT_LED_MATRIX 12
 
 // How long each icon stays on screen before switching to the next one.
 #define DISPLAY_MS 1500
@@ -34,20 +24,37 @@
 // The concrete backend behind `WuaDisplay` is selected at compile time by the
 // active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
 #if defined(WUA_BOARD_LMX2)
+  #include <SPI.h>
+  // ---- Wiring (placeholder values for ESP32-C3 — adjust to your board) ----
+  #define PIN_SCK  6
+  #define PIN_MISO 5
+  #define PIN_MOSI 7
+  #define CS_PIN   10
   WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#elif defined(WUA_BOARD_LMX1)
+  // One LMX1 module is a 7x9 SK6812 RGB matrix.
+  #define WIDTH_LED_MATRIX 7
+  #define HEIGHT_LED_MATRIX 9
+  #define LMX1_LED_PIN 5
+  WuaDisplay display(1);      // LMX1: N modules chained
 #else
-  #error "These examples target the LMX2 backend; build with -D WUA_BOARD_LMX2"
+  #define WIDTH_LED_MATRIX 7
+  #define HEIGHT_LED_MATRIX 9
+  WuaDisplay display(7);      // WuaDisplay (7 modules LMX1 chained)
 #endif
 
 //*********************************************************** */
-//***********        Icon Bitmaps (6 wide x 12 tall)          */
+//***********        Icon Bitmaps                             */
 //*********************************************************** */
-// Each icon is 12 rows of exactly 6 characters. One character = one pixel:
+// Each icon is one text row per panel line, one character per pixel:
 //   '.' off    R red    G green    B blue
 //   Y yellow   C cyan   M magenta  W white   O orange
-// Add your own icons here; just keep them 6 wide and 12 tall.
+// Two sets are defined below so each fits its panel: 6 wide x 12 tall for the
+// LMX2 matrix, 6 wide x 9 tall for the LMX1 / default builds. Add your own
+// icons in the matching block, keeping that block's row/column count.
 
-const char ICONS[][HEIGHT_LED_MATRIX][WIDTH_LED_MATRIX + 1] = {
+#if defined(WUA_BOARD_LMX2)
+  const char ICONS[][HEIGHT_LED_MATRIX][WIDTH_LED_MATRIX + 1] = {
   { // 0: Heart
     "......",
     ".R..R.",
@@ -133,6 +140,76 @@ const char ICONS[][HEIGHT_LED_MATRIX][WIDTH_LED_MATRIX + 1] = {
     "......",
   },
 };
+#else
+  const char ICONS[][HEIGHT_LED_MATRIX][WIDTH_LED_MATRIX + 1] = {
+  { // 0: Heart
+    "......",
+    ".R..R.",
+    "RRRRRR",
+    "RRRRRR",
+    "RRRRRR",
+    ".RRRR.",
+    ".RRRR.",
+    "..RR..",
+    "..RR..",
+  },
+  { // 1: Arrow up
+    "......",
+    "..GG..",
+    ".GGGG.",
+    "GGGGGG",
+    "GGGGGG",
+    "..GG..",
+    "..GG..",
+    "..GG..",
+    "..GG..",
+  },
+  { // 2: Check mark
+    "......",
+    ".....G",
+    "....GG",
+    "...GG.",
+    "G..GG.",
+    "GG.GG.",
+    ".GGGG.",
+    ".GGG..",
+    "..G...",
+  },
+  { // 3: Cross
+    "R....R",
+    "RR..RR",
+    ".RRRR.",
+    "..RR..",
+    "..RR..",
+    "..RR..",
+    ".RRRR.",
+    "RR..RR",
+    "R....R",
+  },
+  { // 4: Battery
+    "..WW..",
+    "GGGGGG",
+    "G....G",
+    "G.GG.G",
+    "G.GG.G",
+    "G.GG.G",
+    "G.GG.G",
+    "G.GG.G",
+    "GGGGGG",
+  },
+  { // 5: Exclamation
+    "..YY..",
+    "..YY..",
+    "..YY..",
+    "..YY..",
+    "..YY..",
+    "..YY..",
+    "......",
+    "..YY..",
+    "..YY..",
+  },
+};
+#endif
 
 // Number of icons in the gallery (computed automatically).
 const uint8_t ICON_COUNT = sizeof(ICONS) / sizeof(ICONS[0]);
@@ -187,9 +264,13 @@ static void drawIcon(uint8_t index)
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("Starting WuaDisplay LMX2 — IconViewer...");
+  Serial.println("Starting WuaDisplay — IconViewer...");
   delay(500);
+
+#if defined(WUA_BOARD_LMX2)
   SPI.begin(PIN_SCK, PIN_MISO, PIN_MOSI, CS_PIN);
+#endif
+
   delay(50);
 
   display.begin();
