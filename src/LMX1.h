@@ -12,7 +12,7 @@
 #define LMX1_MODULE_WIDTH 7
 #endif
 #ifndef LMX1_MODULE_HEIGHT
-#define LMX1_MODULE_HEIGHT 18
+#define LMX1_MODULE_HEIGHT 9
 #endif
 #ifndef LMX1_LED_PIN
 #define LMX1_LED_PIN 5
