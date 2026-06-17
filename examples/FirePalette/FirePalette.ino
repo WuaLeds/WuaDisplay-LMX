@@ -43,16 +43,12 @@
   #define PIN_MOSI 7
   #define CS_PIN   10
   WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
-#elif defined(WUA_BOARD_LMX1)
+#else
   // One LMX1 module is a 7x9 SK6812 RGB matrix.
   #define WIDTH_LED_MATRIX 7
   #define HEIGHT_LED_MATRIX 9
   #define LMX1_LED_PIN 5
   WuaDisplay display(1);      // LMX1: N modules chained
-#else
-  #define WIDTH_LED_MATRIX 7
-  #define HEIGHT_LED_MATRIX 9
-  WuaDisplay display(7);      // WuaDisplay (7 modules LMX1 chained)
 #endif
 
 // Per-pixel heat field. y = 0 is the top row, y = HEIGHT-1 is the hot base.

@@ -1,4 +1,4 @@
-# LMX1 and LMX2 examples
+# Examples
 
 Example sketches written against the high-level `WuaDisplay` API of this
 library. Each sketch runs on **either backend**, selected at build time:
@@ -27,12 +27,10 @@ wiring at compile time:
 #if defined(WUA_BOARD_LMX2)
   // single 6×12 AW20216S over SPI
   WuaDisplay display(CS_PIN);
-#elif defined(WUA_BOARD_LMX1)
-  // one 7×9 SK6812 module over LMX1_LED_PIN
-  WuaDisplay display(1);
 #else
-  // default: chained LMX1 modules
-  WuaDisplay display(7);
+  // LMX1 (also the default when no board flag is set): the constructor argument
+  // is the number of chained 7×9 SK6812 modules — 1 for a single module, N for N.
+  WuaDisplay display(1);
 #endif
 ```
 

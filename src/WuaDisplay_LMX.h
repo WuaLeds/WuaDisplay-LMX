@@ -11,7 +11,7 @@
 //
 //  Pick the backend at COMPILE time with a build flag:
 //
-//    -D WUA_BOARD_LMX1   (default)   N chained 7x18 SK6812 modules (FastLED)
+//    -D WUA_BOARD_LMX1   (default)   N chained 7x9 SK6812 modules (FastLED)
 //    -D WUA_BOARD_LMX2               single 6x12 AW20216S RGB matrix (SPI)
 //
 //  `WuaDisplay` is the resulting concrete type. Constructor arguments are

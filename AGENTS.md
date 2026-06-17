@@ -8,7 +8,7 @@ This file provides guidance to AI coding agents when working with code in this r
 
 WuaDisplay_LMX is a PlatformIO Arduino library (ESP32) that provides a unified, high-level display API on top of different hardware backends:
 
-- **LMX1** — N WuaDisplay modules (7×18 px each) chained horizontally, driven as SK6812 addressable LEDs via FastLED.
+- **LMX1** — N WuaDisplay modules (7×9 px each) chained horizontally, driven as SK6812 addressable LEDs via FastLED.
 - **LMX2** — AW20216S RGB LED matrix (6×12 px, SPI).
 
 It is meant to be the consolidated base library other projects depend on (e.g. `WuaDisplay-r1-firmware`, which chains 7 LMX1 modules into one large display).
@@ -19,7 +19,7 @@ Dependencies (per backend): `adafruit/Adafruit GFX Library` (both), `fastled/Fas
 
 The library is organised in **two layers** using **static (compile-time) polymorphism**:
 
-- **Layer 1 — pixel panels** (`LMX1`, `LMX2`): each is an `Adafruit_GFX` subclass implementing the pixel primitive `drawPixel()` plus a small contract: `begin()`, `clear()`, `flush()`, `blur()`. They own the physical layout — e.g. `LMX1` maps a logical `(7·N)×18` canvas onto the right-to-left LED chain.
+- **Layer 1 — pixel panels** (`LMX1`, `LMX2`): each is an `Adafruit_GFX` subclass implementing the pixel primitive `drawPixel()` plus a small contract: `begin()`, `clear()`, `flush()`, `blur()`. They own the physical layout — e.g. `LMX1` maps a logical `(7·N)×9` canvas onto the right-to-left LED chain.
 - **Layer 2 — high-level engine** (`WuaDisplayLMX<Panel>`, header-only template): text alignment, non-blocking scroll, effects and color helpers, written once on top of any panel's GFX primitives. It composes the panel **by value** (no heap, no vtable on the hot path).
 
 Two axes of variation, two mechanisms:
@@ -30,7 +30,7 @@ Source layout:
 - `src/WuaDisplayLMX.h` — Layer 2 engine (template) and the Panel contract documentation.
 - `src/LMX1.{h,cpp}`, `src/LMX2.{h,cpp}` — Layer 1 backends.
 - `src/WuaDisplay_LMX.h` — public umbrella header; compile-time backend selection → `using WuaDisplay = ...`.
-- `examples/lmx2/` — reference sketches (the library ships **no** app entry point).
+- `examples/` — reference sketches for LMX1 and LMX2 (the library ships **no** app entry point).
 
 Each backend's translation unit is wrapped in its board flag: `LMX1.cpp` compiles unless `WUA_BOARD_LMX2` is set (the LMX1/default case), `LMX2.cpp` only when it is. So a consumer compiles — and pulls the dependency of — only the active backend, regardless of `build_src_filter`. Keep these guards consistent with the `#if/#else` in `WuaDisplay_LMX.h`.
 
@@ -41,10 +41,10 @@ This is a library, not an app: `src/` ships no entry point, so `pio run` cannot 
 To compile-check a bundled example (what CI does), build it as the sketch through the repo's environments, e.g.:
 
 ```sh
-cp examples/lmx2/Basic/Basic.ino src/main.cpp && pio run -e lmx2 && rm src/main.cpp
+cp examples/Basic/Basic.ino src/main.cpp && pio run -e lmx2 && rm src/main.cpp
 ```
 
-CI (`.github/workflows/build.yml`) builds every `examples/lmx2` sketch and a minimal LMX1 sketch on each push/PR.
+CI (`.github/workflows/build.yml`) builds every `examples/` sketch and a minimal LMX1 sketch on each push/PR.
 
 ## Code Style
 
