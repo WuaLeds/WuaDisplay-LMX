@@ -42,6 +42,9 @@
   #define PIN_MISO 5
   #define PIN_MOSI 7
   #define CS_PIN   10
+  // One LMX2 module is a 6x12 SK6812 RGB matrix.
+  #define WIDTH_LED_MATRIX 6
+  #define HEIGHT_LED_MATRIX 12
   WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
 #else
   // One LMX1 module is a 7x9 SK6812 RGB matrix.
