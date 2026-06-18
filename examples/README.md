@@ -83,6 +83,8 @@ display.begin();
 | GameOfLife   | Conway's Game of Life on a software cell buffer.               |
 | FirePalette  | Classic fire effect rendered from a software heat buffer.      |
 | VuMeter      | Bar-graph VU meter (Serial- or analog-driven input).          |
+| Crossfade    | Non-blocking blend between frames (opt-in effects engine).     |
+| Blur         | Bloom/soften the live buffer with `applyBlur` (LMX1 only).     |
 
 ## Not ported
 
