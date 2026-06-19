@@ -77,4 +77,10 @@ void LMX1::blur(uint8_t amount)
     blur2d(_leds, static_cast<uint8_t>(_panelWidth), LMX1_MODULE_HEIGHT, amount, _xyMap);
 }
 
+void LMX1::setBrightness(uint8_t level)
+{
+    // FastLED scales every LED at show() time, so the change lands on the next flush().
+    FastLED.setBrightness(level);
+}
+
 #endif // !WUA_BOARD_LMX2

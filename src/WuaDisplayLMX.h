@@ -26,6 +26,7 @@
 //    * void clear()        clear the framebuffer (native/fast when possible)
 //    * void flush()        push the framebuffer to the hardware
 //    * void blur(uint8_t)  buffer-level blur (no-op when unsupported)
+//    * void setBrightness(uint8_t) master brightness 0..255 (hardware level)
 //
 //  The contract is enforced by use (a missing member is a compile error), so
 //  there is no abstract base class and no runtime cost.
@@ -55,6 +56,13 @@ public:
     }
     void clear() { _panel.clear(); }
     void flush() { _panel.flush(); }
+
+    // ---- brightness --------------------------------------------------------
+    // Master brightness, 0 (off) .. 255 (full), applied by the backend at the
+    // hardware level: a global output scale on LMX1 (FastLED) and the global
+    // current on LMX2 (AW20216S). On LMX1 it takes effect on the next flush();
+    // on LMX2 it is written to the chip immediately.
+    void setBrightness(uint8_t level) { _panel.setBrightness(level); }
 
     // Escape hatch for raw GFX drawing (lines, bitmaps, pixels...).
     Panel &panel() { return _panel; }

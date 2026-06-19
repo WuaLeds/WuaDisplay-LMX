@@ -38,6 +38,7 @@ public:
     void clear();
     void flush();
     void blur(uint8_t amount);
+    void setBrightness(uint8_t level); // global FastLED output scale (applied on flush)
 
     // Adafruit_GFX primitive.
     void drawPixel(int16_t x, int16_t y, uint16_t color) override;

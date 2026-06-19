@@ -85,6 +85,7 @@ display.begin();
 | VuMeter      | Bar-graph VU meter (Serial- or analog-driven input).          |
 | Crossfade    | Non-blocking blend between frames (opt-in effects engine).     |
 | Blur         | Bloom/soften the live buffer with `applyBlur` (LMX1 + LMX2).   |
+| Brightness   | Master brightness ramp via `setBrightness` (LMX1 + LMX2).      |
 
 ## Not ported
 
