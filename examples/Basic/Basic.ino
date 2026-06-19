@@ -3,7 +3,9 @@
 // Ported from the Wualeds_AW20216S "Basic" example to the high-level
 // WuaDisplay API. The backend is selected at build time: -D WUA_BOARD_LMX1
 // for the 7x9 SK6812 module, -D WUA_BOARD_LMX2 for the 6x12 AW20216S matrix,
-// or neither for the default (LMX1) build.
+// -D WUA_BOARD_LMX2D for the 12x12 two-chip board, or neither for the default
+// (LMX1) build. This sketch is size-agnostic (it reads the canvas size from
+// display.panel()), so it runs unchanged on any of them.
 //
 // What it shows:
 //   - display.panel()        : raw Adafruit_GFX escape hatch (per-pixel draw).
@@ -24,8 +26,18 @@
 // begin().
 
 // The concrete backend behind `WuaDisplay` is selected at compile time by the
-// active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
-#if defined(WUA_BOARD_LMX2)
+// active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2 / WUA_BOARD_LMX2D).
+#if defined(WUA_BOARD_LMX2D)
+  #include <SPI.h>
+  // ---- Wiring (placeholder values for ESP32-C3 — adjust to your board) ----
+  // One PCB with two AW20216S chips on a shared SPI bus, one CS each -> 12x12.
+  #define PIN_SCK   6
+  #define PIN_MISO  5
+  #define PIN_MOSI  7
+  #define CS_LEFT   10  // chip driving the left 6x12 half
+  #define CS_RIGHT  1   // chip driving the right 6x12 half
+  WuaDisplay display(CS_LEFT, CS_RIGHT); // LMX2d: two chips, one 12x12 canvas
+#elif defined(WUA_BOARD_LMX2)
   #include <SPI.h>
   // ---- Wiring (placeholder values for ESP32-C3 — adjust to your board) ----
   #define PIN_SCK  6
@@ -46,7 +58,9 @@ void setup()
   Serial.println("Starting WuaDisplay — Basic...");
   delay(500);
 
-#if defined(WUA_BOARD_LMX2)
+#if defined(WUA_BOARD_LMX2D)
+  SPI.begin(PIN_SCK, PIN_MISO, PIN_MOSI); // shared bus; each chip has its own CS
+#elif defined(WUA_BOARD_LMX2)
   SPI.begin(PIN_SCK, PIN_MISO, PIN_MOSI, CS_PIN);
 #endif
 
