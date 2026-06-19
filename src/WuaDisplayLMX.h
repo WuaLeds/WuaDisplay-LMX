@@ -176,8 +176,8 @@ public:
 #ifdef WUA_ENABLE_EFFECTS
     // ---- blur --------------------------------------------------------------
     // Spatial blur (neighbour averaging) on the live framebuffer. Softens and
-    // blooms whatever is currently drawn. Real on backends whose framebuffer can
-    // be read back (LMX1 via FastLED blur2d); a no-op where it cannot (LMX2).
+    // blooms whatever is currently drawn. Implemented on both backends: LMX1 via
+    // FastLED blur2d, LMX2 via a software pass over its RAM shadow buffer.
     void applyBlur(uint8_t amount) { _panel.blur(amount); }
 
     // ---- frames ------------------------------------------------------------

@@ -12,9 +12,10 @@
 //     Calling it repeatedly between flushes makes the shape spread into a soft
 //     glow and slowly fade — a classic "bloom" effect.
 //
-// Hardware note: blur reads the framebuffer back, so it is real on LMX1 (FastLED
-// blur2d) and a no-op on LMX2 (the AW20216S buffer is write-only). On LMX2 the
-// shape simply stays crisp instead of blooming.
+// Backend note: blur needs a readable framebuffer. LMX1 uses FastLED blur2d on
+// its LED array; LMX2 keeps a RAM shadow buffer and blurs that in software (the
+// AW20216S buffer itself cannot be read back). Either way the shape blooms and
+// fades the same.
 
 // Enable the effects engine for this sketch (must precede the library include).
 #define WUA_ENABLE_EFFECTS

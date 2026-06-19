@@ -32,13 +32,20 @@ public:
     void begin();
     void clear();
     void flush();
-    void blur(uint8_t amount); // no-op: the AW20216S buffer is write-only
+    void blur(uint8_t amount); // neighbour averaging on the RAM shadow buffer
 
     // Adafruit_GFX primitive.
     void drawPixel(int16_t x, int16_t y, uint16_t color) override;
 
 private:
     AW20216S _aw;
+
+    // The AW20216S framebuffer cannot be read back, so blur (and any other
+    // read-modify-write effect) needs a RAM mirror to work on. drawPixel writes
+    // here, blur() averages it in place, and flush() pushes it to the chip.
+    // RGB888, x-major within each row: pixel (x, y) channel c is at
+    // _fb[(y * LMX2_WIDTH + x) * 3 + c].
+    uint8_t _fb[LMX2_WIDTH * LMX2_HEIGHT * 3];
 };
 
 #endif // LMX2_H
