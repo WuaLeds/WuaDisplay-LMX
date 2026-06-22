@@ -13,7 +13,7 @@ Full documentation lives in [`docs/`](docs/README.md):
 - [Getting started](docs/02-getting-started.md) — Beginner / Normal / Advanced tracks.
 - [Architecture](docs/03-architecture.md) · [Backends & hardware](docs/04-backends.md) · [API reference](docs/05-api-reference.md) · [Examples](docs/06-examples.md)
 
-AI agents: a self-contained skill file is in [`skill/wuadisplay-lmx.md`](skill/wuadisplay-lmx.md).
+AI agents: a self-contained skill file is in [`docs/skill/wuadisplay-lmx.md`](docs/skill/wuadisplay-lmx.md).
 
 ## Architecture
 

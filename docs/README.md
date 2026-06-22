@@ -18,7 +18,7 @@ follow the track that matches your experience.
 | [06 — Examples](06-examples.md) | Every bundled example sketch, explained step by step. |
 
 For AI agents: a self-contained skill file lives in
-[`../skill/wuadisplay-lmx.md`](../skill/wuadisplay-lmx.md).
+[`skill/wuadisplay-lmx.md`](skill/wuadisplay-lmx.md).
 
 ## The 30-second version
 
