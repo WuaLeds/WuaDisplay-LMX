@@ -129,3 +129,35 @@ jobs:
             echo "::endgroup::"
           done
           rm -f src/main.cpp
+
+  # The LMX1p backend is fixed-geometry (no module count), so it has no example
+  # of its own; compile a minimal sketch exercising the full API against it.
+  smoke-lmx1p:
+    name: Smoke-compile LMX1p backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.platformio
+            ~/.cache/pip
+          key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
+      - name: Install PlatformIO
+        run: pip install --upgrade platformio
+      - name: Build a minimal LMX1p sketch
+        run: |
+          set -e
+          cat > src/main.cpp <<'SKETCH'
+          #include <Arduino.h>
+          #include "WuaDisplay_LMX.h"
+          WuaDisplay display;
+          void setup() { display.begin(); display.clear(); display.printAligned("Hi"); display.flush(); }
+          void loop() { display.update(); }
+          SKETCH
+          pio run -e lmx1p
+          rm -f src/main.cpp

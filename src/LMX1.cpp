@@ -1,8 +1,9 @@
-// LMX1 is the default backend: active whenever no SPI board flag is set
+// LMX1 is the default backend: active whenever no other board flag is set
 // (mirrors the #else branch in WuaDisplay_LMX.h). Guarding the whole translation
-// unit means a consumer building an AW20216S backend (LMX2 / LMX2d) never
-// compiles this file, so it does not drag in FastLED.
-#if !defined(WUA_BOARD_LMX2) && !defined(WUA_BOARD_LMX2D)
+// unit means a consumer building another backend never compiles this file: the
+// AW20216S backends (LMX2 / LMX2d) avoid dragging in FastLED, and the LMX1p
+// backend (also FastLED) ships its own panel.
+#if !defined(WUA_BOARD_LMX2) && !defined(WUA_BOARD_LMX2D) && !defined(WUA_BOARD_LMX1P)
 
 #include "LMX1.h"
 
@@ -83,4 +84,4 @@ void LMX1::setBrightness(uint8_t level)
     FastLED.setBrightness(level);
 }
 
-#endif // !WUA_BOARD_LMX2
+#endif // !WUA_BOARD_LMX2 && !WUA_BOARD_LMX2D && !WUA_BOARD_LMX1P
