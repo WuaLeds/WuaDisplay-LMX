@@ -5,6 +5,16 @@ display hardware. It exposes one text / scroll / effects API on top of different
 pixel backends, and is meant to be the consolidated base library other projects
 depend on.
 
+## 📚 Documentation
+
+Full documentation lives in [`docs/`](docs/README.md):
+
+- [Why WuaDisplay-LMX](docs/01-why-wuadisplay.md) — what it's for and the pain it removes.
+- [Getting started](docs/02-getting-started.md) — Beginner / Normal / Advanced tracks.
+- [Architecture](docs/03-architecture.md) · [Backends & hardware](docs/04-backends.md) · [API reference](docs/05-api-reference.md) · [Examples](docs/06-examples.md)
+
+AI agents: a self-contained skill file is in [`skill/wuadisplay-lmx.md`](skill/wuadisplay-lmx.md).
+
 ## Architecture
 
 Two layers, joined by **static (compile-time) polymorphism** — no virtual
@@ -37,11 +47,19 @@ is written once on top.
 
 ## Backends
 
-- **LMX1** — N modules of 7×9 px chained horizontally, driven as SK6812
-  addressable LEDs through FastLED. Logical canvas: `(7·N) × 9`.
-- **LMX2** — single AW20216S 6×12 RGB matrix over SPI. (At 6 px wide, text is
-  barely legible; this panel mainly targets pixel art and effects, but honours
-  the same contract.)
+Selected at compile time with one `-D WUA_BOARD_*` flag; see
+[docs/04-backends.md](docs/04-backends.md) for full details.
+
+- **LMX1** — N modules of 7×9 px chained horizontally (SK6812 / FastLED).
+  Canvas: `(7·N) × 9`.
+- **LMX2** — single AW20216S 6×12 RGB matrix over SPI.
+- **LMX2d** — one PCB with two AW20216S chips → `12 × 12` (SPI, one CS each).
+- **LMX1p** — "panoramic" PCB with two LMX1 modules wired as one serpentine
+  chain → `18 × 7` (SK6812 / FastLED).
+
+Beyond text and scroll, the high-level layer adds master `setBrightness()` and an
+opt-in effects engine (`applyBlur` + non-blocking `startCrossfade`, enabled with
+`-D WUA_ENABLE_EFFECTS`).
 
 ## Usage
 
