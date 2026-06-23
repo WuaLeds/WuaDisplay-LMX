@@ -11,6 +11,11 @@
 //
 // The sketch fills the panel with a solid color and ramps the brightness up and
 // down forever, so you see it breathe from black to full and back.
+//
+// Power note: on LMX2, brightness maps to the AW20216S global current, so full
+// brightness (255) drives roughly 4x the current of begin()'s default (0x40) --
+// make sure your supply can source it, or lower the top of the ramp. LMX1 is
+// bounded by FastLED's setMaxPowerInVoltsAndMilliamps(), so it self-limits.
 
 #include <Arduino.h>
 #include "WuaDisplay_LMX.h"
@@ -54,15 +59,21 @@ void setup()
   display.flush();
 }
 
-// Ramp the brightness from `start` to `end` (inclusive of direction), flushing
-// each step so LMX1 (which scales at show() time) tracks the change too.
+// Ramp the brightness from `start` to `end` (inclusive), flushing each step so
+// LMX1 (which scales at show() time) tracks the change too. The last step snaps
+// onto `end` so the ramp always reaches the exact endpoint (e.g. full 255 / off
+// 0) even when `step` does not divide the range evenly.
 static void ramp(int16_t start, int16_t end, int16_t step)
 {
-  for (int16_t level = start; (step > 0) ? level <= end : level >= end; level += step)
+  for (int16_t level = start;; level += step)
   {
+    if ((step > 0) ? (level > end) : (level < end))
+      level = end;
     display.setBrightness(static_cast<uint8_t>(level));
     display.flush();
     delay(STEP_MS);
+    if (level == end)
+      break;
   }
 }
 
