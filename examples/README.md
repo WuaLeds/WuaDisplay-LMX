@@ -83,6 +83,8 @@ display.begin();
 | GameOfLife   | Conway's Game of Life on a software cell buffer.               |
 | FirePalette  | Classic fire effect rendered from a software heat buffer.      |
 | VuMeter      | Bar-graph VU meter (Serial- or analog-driven input).          |
+| Crossfade    | Non-blocking blend between frames (opt-in effects engine).     |
+| Blur         | Bloom/soften the live buffer with `applyBlur` (LMX1 + LMX2).   |
 
 ## Not ported
 
@@ -105,6 +107,6 @@ does not expose:
 - Both panels are **narrow** (LMX2 is 6 px wide, one LMX1 module 7 px), so
   static text is barely legible; `TextScroll` uses horizontal scrolling, which
   is what makes sense here. Chain several LMX1 modules for a wider marquee.
-- `applyBlur()` is a **no-op** on LMX2 (the AW20216S framebuffer cannot be read
-  back), so effects such as `FirePalette` keep their own software buffer; this
-  also keeps the result identical across both backends.
+- `applyBlur()` works on **both** backends: LMX1 blurs its FastLED LED array,
+  while LMX2 blurs a small RAM shadow buffer in software (the AW20216S
+  framebuffer itself cannot be read back). The bloom looks the same on each.

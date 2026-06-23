@@ -38,7 +38,10 @@ jobs:
           rm -f src/main.cpp
 
   # Nothing else exercises the LMX1 backend, so compile a minimal sketch against
-  # it to keep that translation unit (and its FastLED path) building.
+  # it to keep that translation unit (and its FastLED path) building. The
+  # examples-lmx2 job already covers the effects layer on LMX2; build the
+  # effects-enabled examples here too so the LMX1 effects path (FastLED blur2d +
+  # crossfade) is exercised as well, and a plain sketch to cover effects-off.
   smoke-lmx1:
     name: Smoke-compile LMX1 backend
     runs-on: ubuntu-latest
@@ -56,7 +59,7 @@ jobs:
           key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
       - name: Install PlatformIO
         run: pip install --upgrade platformio
-      - name: Build a minimal LMX1 sketch
+      - name: Build a minimal LMX1 sketch (effects off)
         run: |
           set -e
           cat > src/main.cpp <<'SKETCH'
@@ -67,4 +70,14 @@ jobs:
           void loop() { display.update(); }
           SKETCH
           pio run -e lmx1
+          rm -f src/main.cpp
+      - name: Build the effects-enabled examples on LMX1
+        run: |
+          set -e
+          for f in examples/Crossfade/Crossfade.ino examples/Blur/Blur.ino; do
+            echo "::group::$f"
+            cp "$f" src/main.cpp
+            pio run -e lmx1
+            echo "::endgroup::"
+          done
           rm -f src/main.cpp

@@ -16,9 +16,8 @@
 //   - mapping a scalar to RGB through a palette function (heatToColor()).
 //
 // Note: this keeps its own software heat buffer, so the smoothing is done in RAM
-// rather than on the panel. That makes the effect identical on every backend and
-// works even on LMX2, where applyBlur() is a no-op (the AW20216S framebuffer
-// cannot be read back).
+// rather than on the panel. The effect is self-contained and identical on every
+// backend, independent of the panel's applyBlur().
 
 #include <Arduino.h>
 #include "WuaDisplay_LMX.h"
