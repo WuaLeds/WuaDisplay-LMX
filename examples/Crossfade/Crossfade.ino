@@ -42,10 +42,10 @@
 #if defined(WUA_BOARD_LMX2)
   #include <SPI.h>
   // ---- Wiring (placeholder values for ESP32-C3 — adjust to your board) ----
-  #define PIN_SCK  18
-  #define PIN_MISO 19
-  #define PIN_MOSI 23
-  #define CS_PIN   5
+  #define PIN_SCK  6
+  #define PIN_MISO 5
+  #define PIN_MOSI 7
+  #define CS_PIN   10
   WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
 #else
   // One LMX1 module is a 7x9 SK6812 RGB matrix.
