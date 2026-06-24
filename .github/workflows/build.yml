@@ -39,9 +39,10 @@ jobs:
 
   # Nothing else exercises the LMX1 backend, so compile a minimal sketch against
   # it to keep that translation unit (and its FastLED path) building. The
-  # examples-lmx2 job already covers the effects layer on LMX2; build the
-  # effects-enabled examples here too so the LMX1 effects path (FastLED blur2d +
-  # crossfade) is exercised as well, and a plain sketch to cover effects-off.
+  # examples-lmx2 job already covers these on LMX2; build the LMX1-specific
+  # examples here too so the LMX1 paths (FastLED blur2d + crossfade, and the
+  # FastLED brightness scale) are exercised as well, plus a plain sketch to
+  # cover effects-off.
   smoke-lmx1:
     name: Smoke-compile LMX1 backend
     runs-on: ubuntu-latest
@@ -71,10 +72,10 @@ jobs:
           SKETCH
           pio run -e lmx1
           rm -f src/main.cpp
-      - name: Build the effects-enabled examples on LMX1
+      - name: Build the LMX1-specific examples on LMX1
         run: |
           set -e
-          for f in examples/Crossfade/Crossfade.ino examples/Blur/Blur.ino; do
+          for f in examples/Crossfade/Crossfade.ino examples/Blur/Blur.ino examples/Brightness/Brightness.ino; do
             echo "::group::$f"
             cp "$f" src/main.cpp
             pio run -e lmx1

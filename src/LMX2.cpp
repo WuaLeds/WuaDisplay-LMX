@@ -102,4 +102,11 @@ void LMX2::blur(uint8_t amount)
             blurLine(&_fb[x * 3 + c], LMX2_HEIGHT, LMX2_WIDTH * 3, keep, seep);
 }
 
+void LMX2::setBrightness(uint8_t level)
+{
+    // The AW20216S global current acts as the master brightness; it is a register
+    // write that applies immediately (begin() seeds it at 0x40).
+    _aw.setGlobalCurrent(level);
+}
+
 #endif // WUA_BOARD_LMX2

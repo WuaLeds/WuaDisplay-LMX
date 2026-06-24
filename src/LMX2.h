@@ -32,7 +32,8 @@ public:
     void begin();
     void clear();
     void flush();
-    void blur(uint8_t amount); // neighbour averaging on the RAM shadow buffer
+    void blur(uint8_t amount);         // neighbour averaging on the RAM shadow buffer
+    void setBrightness(uint8_t level); // AW20216S global current (written immediately)
 
     // Adafruit_GFX primitive.
     void drawPixel(int16_t x, int16_t y, uint16_t color) override;

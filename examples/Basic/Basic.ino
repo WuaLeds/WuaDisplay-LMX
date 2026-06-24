@@ -18,9 +18,10 @@
 #include <Arduino.h>
 #include "WuaDisplay_LMX.h"
 
-// Master brightness and white balance (where the hardware supports them) are
-// configured inside the backend's begin(); they are not part of the high-level
-// API.
+// Master brightness is available through the high-level API on both backends
+// (display.setBrightness(0..255) — see the Brightness example). White balance,
+// where the hardware supports it, is still configured inside the backend's
+// begin().
 
 // The concrete backend behind `WuaDisplay` is selected at compile time by the
 // active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2).
