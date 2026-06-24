@@ -4,7 +4,8 @@
 #include <Arduino.h>
 #include <Adafruit_GFX.h>
 #include <FastLED.h>
-#include "LMX1.h" // reuse the single-module geometry (LMX1_MODULE_WIDTH/HEIGHT)
+#include <fl/xmap.h> // fl::XYMap, for blur2d
+#include "LMX1.h"    // reuse the single-module geometry (LMX1_MODULE_WIDTH/HEIGHT)
 
 // Data pin for the SK6812 chain. FastLED needs the pin as a compile-time
 // constant, so it cannot be a runtime constructor argument. Defaults to the
@@ -51,13 +52,15 @@ public:
     void begin();
     void clear();
     void flush();
-    void blur(uint8_t amount); // deferred: effects are wired up in a later PR
+    void blur(uint8_t amount);         // FastLED blur2d over the LED array
+    void setBrightness(uint8_t level); // global FastLED output scale (applied on flush)
 
     // Adafruit_GFX primitive.
     void drawPixel(int16_t x, int16_t y, uint16_t color) override;
 
 private:
     CRGB _leds[LMX1P_WIDTH * LMX1P_HEIGHT];
+    fl::XYMap _xyMap; // logical (x, y) -> physical LED index, for blur2d
 };
 
 #endif // LMX1P_H

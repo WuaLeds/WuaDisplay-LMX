@@ -17,7 +17,8 @@ static uint16_t lmx1pLayoutXY(uint16_t x, uint16_t y, uint16_t width, uint16_t h
 }
 
 LMX1P::LMX1P()
-    : Adafruit_GFX(LMX1P_WIDTH, LMX1P_HEIGHT)
+    : Adafruit_GFX(LMX1P_WIDTH, LMX1P_HEIGHT),
+      _xyMap(fl::XYMap::constructWithUserFunction(LMX1P_WIDTH, LMX1P_HEIGHT, lmx1pLayoutXY, 0))
 {
 }
 
@@ -52,11 +53,19 @@ void LMX1P::flush()
     FastLED.show();
 }
 
-void LMX1P::blur(uint8_t /*amount*/)
+void LMX1P::blur(uint8_t amount)
 {
-    // Effects are deferred until the LMX1p backend lands. Unlike LMX2/LMX2D the
-    // FastLED framebuffer can be read back, so this can later reuse LMX1's
-    // blur2d() + fl::XYMap path built from lmx1pLayoutXY.
+    // The FastLED framebuffer can be read back, so blur the LED array in place
+    // with FastLED's blur2d, mapped through the panel's serpentine layout --
+    // the same path as LMX1. The XYMap makes the bloom cross the module seam, so
+    // the 18x7 panel blurs as one continuous surface.
+    blur2d(_leds, static_cast<uint8_t>(LMX1P_WIDTH), static_cast<uint8_t>(LMX1P_HEIGHT), amount, _xyMap);
+}
+
+void LMX1P::setBrightness(uint8_t level)
+{
+    // FastLED scales every LED at show() time, so the change lands on the next flush().
+    FastLED.setBrightness(level);
 }
 
 #endif // WUA_BOARD_LMX1P
