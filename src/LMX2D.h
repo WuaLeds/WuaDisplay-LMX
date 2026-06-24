@@ -40,7 +40,8 @@ public:
     void begin();
     void clear();
     void flush();
-    void blur(uint8_t amount); // no-op: the AW20216S buffer is write-only
+    void blur(uint8_t amount);         // software blur over the RAM shadow buffer
+    void setBrightness(uint8_t level); // AW20216S global current on both chips
 
     // Adafruit_GFX primitive.
     void drawPixel(int16_t x, int16_t y, uint16_t color) override;
@@ -48,6 +49,13 @@ public:
 private:
     AW20216S _left;  // chip covering columns [0, LMX2_WIDTH)
     AW20216S _right; // chip covering columns [LMX2_WIDTH, 2*LMX2_WIDTH)
+
+    // The AW20216S framebuffer cannot be read back, so blur (and any other
+    // read-modify-write effect) needs a RAM mirror of the whole 12x12 canvas.
+    // drawPixel writes here, blur() averages it in place, and flush() routes
+    // each pixel to the chip that owns its column. RGB888, x-major within each
+    // row: pixel (x, y) channel c is at _fb[(y * LMX2D_WIDTH + x) * 3 + c].
+    uint8_t _fb[LMX2D_WIDTH * LMX2D_HEIGHT * 3];
 };
 
 #endif // LMX2D_H

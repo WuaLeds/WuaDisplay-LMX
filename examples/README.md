@@ -136,6 +136,7 @@ does not expose:
 - Both panels are **narrow** (LMX2 is 6 px wide, one LMX1 module 7 px), so
   static text is barely legible; `TextScroll` uses horizontal scrolling, which
   is what makes sense here. Chain several LMX1 modules for a wider marquee.
-- `applyBlur()` works on **both** backends: LMX1 blurs its FastLED LED array,
-  while LMX2 blurs a small RAM shadow buffer in software (the AW20216S
-  framebuffer itself cannot be read back). The bloom looks the same on each.
+- `applyBlur()` works on **all** backends: LMX1 blurs its FastLED LED array,
+  while LMX2 and LMX2d blur a small RAM shadow buffer in software (the AW20216S
+  framebuffer itself cannot be read back). On LMX2d the bloom crosses the seam
+  between the two chips, so it looks the same as on a single continuous panel.

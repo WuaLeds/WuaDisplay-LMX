@@ -61,6 +61,9 @@ jobs:
         run: |
           set -e
           cat > src/main.cpp <<'SKETCH'
+          // Exercises the full Panel contract (setBrightness + blur via the
+          // effects layer, on top of text/scroll) so a missing member is caught.
+          #define WUA_ENABLE_EFFECTS
           #include <Arduino.h>
           #include <SPI.h>
           #include "WuaDisplay_LMX.h"
@@ -68,8 +71,11 @@ jobs:
           void setup() {
             SPI.begin();
             display.begin();
+            display.setBrightness(200);
             display.clear();
             display.printAligned("Hi");
+            display.flush();
+            display.applyBlur(64);
             display.flush();
             display.startScroll("LMX2d");
           }
