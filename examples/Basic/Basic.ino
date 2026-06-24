@@ -3,9 +3,10 @@
 // Ported from the Wualeds_AW20216S "Basic" example to the high-level
 // WuaDisplay API. The backend is selected at build time: -D WUA_BOARD_LMX1
 // for the 7x9 SK6812 module, -D WUA_BOARD_LMX2 for the 6x12 AW20216S matrix,
-// -D WUA_BOARD_LMX2D for the 12x12 two-chip board, or neither for the default
-// (LMX1) build. This sketch is size-agnostic (it reads the canvas size from
-// display.panel()), so it runs unchanged on any of them.
+// -D WUA_BOARD_LMX2D for the 12x12 two-chip board, -D WUA_BOARD_LMX1P for the
+// 18x7 panoramic panel, or neither for the default (LMX1) build. This sketch is
+// size-agnostic (it reads the canvas size from display.panel()), so it runs
+// unchanged on any of them.
 //
 // What it shows:
 //   - display.panel()        : raw Adafruit_GFX escape hatch (per-pixel draw).
@@ -26,7 +27,7 @@
 // begin().
 
 // The concrete backend behind `WuaDisplay` is selected at compile time by the
-// active PlatformIO environment (WUA_BOARD_LMX1 / WUA_BOARD_LMX2 / WUA_BOARD_LMX2D).
+// active PlatformIO environment (LMX1 / LMX2 / LMX2D / LMX1P board flags).
 #if defined(WUA_BOARD_LMX2D)
   #include <SPI.h>
   // ---- Wiring (placeholder values for ESP32-C3 — adjust to your board) ----
@@ -45,6 +46,11 @@
   #define PIN_MOSI 7
   #define CS_PIN   10
   WuaDisplay display(CS_PIN); // LMX2: AW20216S on CS pin 10
+#elif defined(WUA_BOARD_LMX1P)
+  // LMX1p is a fixed 18x7 "panoramic" panel: one PCB with two LMX1 modules
+  // chained as a single SK6812 run on one data pin (LMX1P_LED_PIN, default 5).
+  // No module count is needed; this sketch sizes itself from display.panel().
+  WuaDisplay display;         // LMX1p: fixed 18x7 panoramic panel
 #else
   // One LMX1 module is a 7x9 SK6812 RGB matrix. This sketch sizes itself from
   // display.panel(), so no WIDTH/HEIGHT defines are needed here.

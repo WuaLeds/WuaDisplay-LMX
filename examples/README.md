@@ -8,13 +8,15 @@ library. Each sketch runs on **either backend**, selected at build time:
 - `-D WUA_BOARD_LMX2` — a single 6×12 AW20216S RGB matrix driven over SPI.
 - `-D WUA_BOARD_LMX2D` — one PCB with two AW20216S chips side by side (one SPI
   bus, one chip-select each), exposed as a single 12×12 canvas.
+- `-D WUA_BOARD_LMX1P` — the "panoramic" 18×7 panel: one PCB with two LMX1
+  modules wired as a single SK6812 chain (FastLED), used in landscape.
 
-> **About the sketches below.** Their per-board config blocks select between the
-> LMX1 and LMX2 backends only. The `LMX2D` backend shares the exact same
-> high-level API; to run a sketch on it, declare the display with the two
-> chip-select pins (`WuaDisplay display(CS_LEFT, CS_RIGHT);`) and start the SPI
-> bus, as shown under *LMX2d wiring* below. CI compile-checks LMX2d from a
-> minimal sketch rather than from these examples.
+> **About the sketches below.** Most of their per-board config blocks select
+> between the LMX1 and LMX2 backends only. The `LMX2D` and `LMX1P` backends share
+> the exact same high-level API; to run a sketch on one, declare the display as
+> shown under its *wiring* section below (`WuaDisplay display(CS_LEFT, CS_RIGHT);`
+> for LMX2d, `WuaDisplay display;` for LMX1p). CI compile-checks both from minimal
+> sketches rather than from these examples.
 
 They were ported from the upstream
 [`Wualeds_AW20216S`](https://github.com/WuaLeds/Wualeds_AW20216S) examples,
@@ -36,6 +38,9 @@ wiring at compile time:
 #if defined(WUA_BOARD_LMX2)
   // single 6×12 AW20216S over SPI
   WuaDisplay display(CS_PIN);
+#elif defined(WUA_BOARD_LMX1P)
+  // panoramic 18×7 panel — fixed geometry, no module count
+  WuaDisplay display;
 #else
   // LMX1 (also the default when no board flag is set): the constructor argument
   // is the number of chained 7×9 SK6812 modules — 1 for a single module, N for N.
@@ -98,6 +103,19 @@ WuaDisplay display(1); // one 7×9 module; pass N for N chained modules
 display.begin();
 ```
 
+### LMX1p wiring (single data pin)
+
+The LMX1p is a single PCB whose two LMX1 modules are wired as one continuous
+SK6812 chain on one data pin (`LMX1P_LED_PIN`, default 5), so it is driven
+exactly like an LMX1 chain. Its geometry is fixed (18×7), so it takes no
+constructor argument:
+
+```cpp
+WuaDisplay display; // fixed 18×7 panoramic panel
+// ...
+display.begin();
+```
+
 ## Examples
 
 | Example      | What it shows                                                  |
@@ -136,7 +154,8 @@ does not expose:
 - Both panels are **narrow** (LMX2 is 6 px wide, one LMX1 module 7 px), so
   static text is barely legible; `TextScroll` uses horizontal scrolling, which
   is what makes sense here. Chain several LMX1 modules for a wider marquee.
-- `applyBlur()` works on **all** backends: LMX1 blurs its FastLED LED array,
-  while LMX2 and LMX2d blur a small RAM shadow buffer in software (the AW20216S
-  framebuffer itself cannot be read back). On LMX2d the bloom crosses the seam
-  between the two chips, so it looks the same as on a single continuous panel.
+- `applyBlur()` works on **all** backends: LMX1 and LMX1p blur their FastLED LED
+  array directly, while LMX2 and LMX2d blur a small RAM shadow buffer in software
+  (the AW20216S framebuffer itself cannot be read back). On the two-panel boards
+  (LMX2d, LMX1p) the bloom crosses the seam between the halves, so it looks the
+  same as on a single continuous panel.

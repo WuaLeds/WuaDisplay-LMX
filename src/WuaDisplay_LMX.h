@@ -14,13 +14,15 @@
 //    -D WUA_BOARD_LMX1   (default)   N chained 7x9 SK6812 modules (FastLED)
 //    -D WUA_BOARD_LMX2               single 6x12 AW20216S RGB matrix (SPI)
 //    -D WUA_BOARD_LMX2D              one PCB with two AW20216S chips -> 12x12 (SPI)
+//    -D WUA_BOARD_LMX1P              panoramic 18x7 from two LMX1 modules (FastLED)
 //
 //  `WuaDisplay` is the resulting concrete type. Constructor arguments are
 //  forwarded to the active panel:
 //
-//    WuaDisplay display(7);        // LMX1: 7 modules chained -> 49x18 canvas
+//    WuaDisplay display(7);        // LMX1: 7 modules chained -> 49x9 canvas
 //    WuaDisplay display(10);       // LMX2: AW20216S on CS pin 10
 //    WuaDisplay display(10, 1);    // LMX2d: two chips on CS pins 10 and 1
+//    WuaDisplay display;           // LMX1p: fixed 18x7 panoramic panel
 //
 //  Only the active backend's header (and its dependency) is pulled in.
 // ============================================================================
@@ -33,6 +35,9 @@ using WuaDisplay = WuaDisplayLMX<LMX2D>;
 #elif defined(WUA_BOARD_LMX2)
 #include "LMX2.h"
 using WuaDisplay = WuaDisplayLMX<LMX2>;
+#elif defined(WUA_BOARD_LMX1P)
+#include "LMX1P.h"
+using WuaDisplay = WuaDisplayLMX<LMX1P>;
 #else
 #include "LMX1.h"
 using WuaDisplay = WuaDisplayLMX<LMX1>;
