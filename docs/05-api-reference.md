@@ -115,8 +115,9 @@ library (or via `-D WUA_ENABLE_EFFECTS`). Without it, they compile to nothing.
 | --- | --- |
 | `void applyBlur(uint8_t amount)` | Spatial neighbour-averaging blur on the live framebuffer (softens / blooms). |
 
-Works on both families: LMX1/LMX1p blur the FastLED array (`blur2d`); LMX2 blurs
-its RAM shadow buffer in software; LMX2d is a no-op.
+Works on **all** backends: LMX1/LMX1p blur the FastLED array (`blur2d`); LMX2 and
+LMX2d blur a RAM shadow buffer in software (on LMX2d the bloom crosses the seam
+between the two chips, so it looks like one continuous surface).
 
 ### Frames
 

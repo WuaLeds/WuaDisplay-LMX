@@ -136,8 +136,8 @@ Draws something, then calls `applyBlur(amount)` to bloom/soften the live buffer
 before `flush()`.
 
 1. Requires `WUA_ENABLE_EFFECTS`.
-2. On LMX1/LMX1p it blurs the FastLED array; on LMX2 it blurs the RAM shadow
-   buffer — same look.
+2. On LMX1/LMX1p it blurs the FastLED array; on LMX2/LMX2d it blurs the RAM
+   shadow buffer — same look.
 
 **Teaches:** the one-call live blur.
 

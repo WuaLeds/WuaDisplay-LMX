@@ -41,8 +41,8 @@ questions and generate code without needing the repo open.
 
 - **LMX1:** N modules (7×9) chained, ordered right-to-left.
 - **LMX2:** single AW20216S; keeps a RAM shadow buffer so blur works.
-- **LMX2d:** one PCB, two AW20216S; left chip = cols [0,6), right = cols [6,12);
-  blur is a no-op.
+- **LMX2d:** one PCB, two AW20216S; left chip = cols [0,6), right = cols [6,12).
+  Keeps a RAM shadow buffer too, so blur works (bloom crosses the chip seam).
 - **LMX1p:** one PCB, two LMX1 modules as one chain; right-to-left **vertical
   serpentine**: `column=(W-1)-x; offset=(column&1)?(H-1-y):y; index=column*H+offset`.
 
@@ -144,9 +144,10 @@ include in the sketch).
   cooperative and never block.
 - **`clear()`/`printAligned()` don't push.** Call `flush()` (or use
   `printAlignedRefresh`). Scroll/crossfade flush themselves.
-- **AW20216S framebuffer is write-only.** Blur on LMX2 uses a RAM shadow; on
-  LMX2d blur is a no-op. Software-buffer effects (FirePalette) look identical
-  across backends by design.
+- **AW20216S framebuffer is write-only.** Blur on LMX2 and LMX2d works via a RAM
+  shadow buffer that `flush()` pushes to the chip(s); blur is real on all four
+  backends. Software-buffer effects (FirePalette) look identical across backends
+  by design.
 - **FastLED data pin is compile-time** (`LMX1_LED_PIN`/`LMX1P_LED_PIN`), not a
   constructor argument.
 - **LMX1p takes no constructor args** (fixed 18×7): `WuaDisplay display;`.

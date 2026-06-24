@@ -161,8 +161,12 @@ display.begin();
 
 ### Notes
 
-- `blur()` is a no-op on LMX2d (matching the write-only AW20216S framebuffer);
-  effects keep their own software buffer.
+- Like LMX2, the chip framebuffer can't be read back, so the backend keeps a
+  **RGB888 RAM mirror** of the whole 12×12 canvas: `drawPixel()` writes the
+  mirror, `flush()` routes each pixel to the chip that owns its column, and
+  `blur()` averages the mirror in place. So `applyBlur()` is **fully supported** —
+  the bloom even crosses the seam between the two chips, like one continuous
+  surface.
 
 ---
 
